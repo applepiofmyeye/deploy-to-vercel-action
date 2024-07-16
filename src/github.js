@@ -54,27 +54,29 @@ const init = () => {
 			owner: USER,
 			repo: REPOSITORY,
 			issue_number: PR_NUMBER
-		})
-
-		if (data.length < 1) return
-
-		const comments = data.filter((comment) => comment.body.includes('This pull request has been deployed to Vercel.'))
+		});
+	
+		if (data.length < 1) return [];
+	
+		const comments = data.filter(comment => comment.body.includes('This pull request has been deployed to Vercel.'));
+	
 		if (comments.length > 0) {
-			let commentIds = []
-			for (let i = 0; i < comments.length; i++) {
+			// Use Promise.all to delete comments concurrently
+			await Promise.all(comments.map(async comment => {
 				await client.issues.deleteComment({
 					owner: USER,
 					repo: REPOSITORY,
-					comment_id: comments[i].id})
-				commentIds[i] = comments[i].id
-			}
-
-			return commentIds
-
+					comment_id: comment.id
+				});
+			}));
+	
+			// Return an array of deleted comment IDs
+			return comments.map(comment => comment.id);
 		} else {
-			return []
+			return [];
 		}
-	}
+	};
+	
 
 	const createComment = async (body) => {
 		// Remove indentation
