@@ -142,9 +142,9 @@ const run = async () => {
 		if (IS_PR) {
 			if (DELETE_EXISTING_COMMENT) {
 				core.info('Checking for existing comment on PR')
-				const deletedCommentId = await github.deleteExistingComment()
+				const deletedCommentIds = await github.deleteExistingComment()
 
-				if (deletedCommentId) core.info(`Deleted existing comment #${ deletedCommentId }`)
+				if (deletedCommentIds) core.info(`Deleted existing comment ${ deletedCommentIds.map(id => `#${id}`) }`)
 			}
 
 			if (CREATE_COMMENT) {
