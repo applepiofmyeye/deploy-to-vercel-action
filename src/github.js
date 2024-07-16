@@ -60,13 +60,16 @@ const init = () => {
 
 		const comments = data.filter((comment) => comment.body.includes('This pull request has been deployed to Vercel.'))
 		if (comments.length > 0) {
-			const commentIdPromise = comments.map(async comment => await client.issues.deleteComment({
-				owner: USER,
-				repo: REPOSITORY,
-				comment_id: comment.id
-			})) 
+			let commentIds = []
+			for (let i = 0; i < comments.length; i++) {
+				await client.issues.deleteComment({
+					owner: USER,
+					repo: REPOSITORY,
+					comment_id: comments[i].id})
+				commentIds[i] = comments[i].id
+			}
 
-			return Promise.all(commentIdPromise).then(() => comments.map(comment => comment.id))
+			return commentIds
 
 		} else {
 			return []
